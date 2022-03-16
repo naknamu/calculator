@@ -239,3 +239,184 @@ buttons.forEach((button) => {
     })
 })
 
+//keyboard support
+document.addEventListener('keydown', function(e) {
+    switch (e.key) {
+        case '1':
+            !checkOperator ? firstInput += "1" : secondInput += '1';      
+                break;
+        case '2':
+            !checkOperator ? firstInput += "2" : secondInput += '2'; 
+            break;
+        case '3':
+            !checkOperator ? firstInput += "3" : secondInput += '3'; 
+            break;
+        case '4':
+            !checkOperator ? firstInput += "4" : secondInput += '4'; 
+            break;
+        case '5':
+            !checkOperator ? firstInput += "5" : secondInput += '5'; 
+            break;
+        case '6':
+            !checkOperator ? firstInput += "6" : secondInput += '6'; 
+            break;
+        case '7':
+            !checkOperator ? firstInput += "7" : secondInput += '7'; 
+            break;
+        case '8':
+            !checkOperator ? firstInput += "8" : secondInput += '8'; 
+            break;
+        case '9':
+            !checkOperator ? firstInput += "9" : secondInput += '9'; 
+            break;
+        case '0':
+            !checkOperator ? firstInput += "0" : secondInput += '0'; 
+            break;
+        case "+":           
+            dotButton.disabled = false; //enable dot button
+            if (!checkOperator) {    
+                operator = '+';
+                checkOperator = true;
+            } else {
+                solution = operate(operator, num1, num2);
+                firstInput = solution;
+                operator = '+';
+                secondInput = "";
+                checkEquals = false;
+            }
+            break;
+        case "-":
+            dotButton.disabled = false; //enable dot button
+            if (!checkOperator) {
+                operator = '-';
+                checkOperator = true;
+            } else {
+                solution = operate(operator, num1, num2);
+                firstInput = solution;
+                operator = '-';
+                secondInput = "";
+                checkEquals = false; 
+            }
+            break;
+        case "*":
+            dotButton.disabled = false; //enable dot button
+            if (!checkOperator) {
+                operator = 'x';
+                checkOperator = true;
+            } else {
+                solution = operate(operator, num1, num2);
+                firstInput = solution;
+                operator = 'x';
+                secondInput = "";
+                checkEquals = false; 
+            }
+            break;
+        case "/":
+            dotButton.disabled = false; //enable dot button
+            if (!checkOperator) {
+                operator = '/';
+                checkOperator = true;
+            } else {
+                solution = operate(operator, num1, num2);
+                firstInput = solution;
+                operator = '/';
+                secondInput = "";
+                checkEquals = false; 
+            }
+            break;
+        case 'Enter':
+            dotButton.disabled = false; //enable dot button
+            checkEquals = true;
+            checkOperator = false;
+            solution = operate(operator, num1, num2);
+            //reset values
+            firstInput = solution;
+            operator = "";
+            secondInput = "";
+            break;
+        case 'Escape':
+            //wipe out any existing data
+            firstInput = "";
+            secondInput = "";
+            operator = "";
+            checkOperator = false;
+            checkEquals = false;
+            num1, num2, solution = 0;
+            //enable all buttons if disabled
+            buttons.forEach((button) => {
+                button.disabled = false;
+            })
+            break;
+        case '.':
+            //let users input decimals
+            !checkOperator ? firstInput += '.' : secondInput += '.'; 
+            //disable dot button
+            dotButton.disabled = true;
+            break;
+        case 'Backspace':
+            //user can undo if they click the wrong number
+            if (firstInput !== "" && firstInput !== undefined && !checkOperator)
+            {
+                newDisplay =  firstInput.slice(0, firstInput.length-1);
+                firstInput = newDisplay;
+                console.log("delete firstInput!");
+            } else if (firstInput !== "" && secondInput === "" && checkOperator) {
+                newDisplay = operator.slice(0, operator.length-1);
+                operator = newDisplay;
+                checkOperator = false;
+                console.log("delete operator!");
+            } else if (secondInput !== "") {
+                newDisplay = secondInput.slice(0, secondInput.length-1);
+                secondInput = newDisplay;
+                console.log("delete secondInput!");
+            } else{
+                console.log("nothing to delete!");
+            }
+            break;
+    }
+    //display the input to the console
+    console.log("first: "+ firstInput);
+    console.log("operator: "+ operator);
+    console.log("second: "+ secondInput);
+    console.log("solution: "+ solution);
+    console.log("checkOperator: "+ checkOperator);
+
+    //convert string to floating point value
+    convIntToFloat();
+
+    //display input to screen depending on multiple conditions
+    displayToScreen();
+
+    //special case
+    if (solution === snarkyMessage || Number.isNaN(solution)) {
+        buttons.forEach((button) => {
+            if (button.id !== 'clear') {
+            button.disabled = true;
+            }
+        })
+    }
+})
+
+const displayToScreen = function() {
+    //display input to screen dependin on multiple conditions
+    //if equals is pressed and first input is not empty and undefined
+    if (checkEquals && firstInput !== "" && firstInput !== undefined) {
+        checkEquals = false;
+        display.textContent = solution;
+    }
+    //if equals is pressed first before entering all the numbers and operator
+    else if ((checkEquals || checkOperator) && (firstInput === "" || firstInput === undefined)) {
+        display.textContent = "Math Error!";
+    }
+    //display only a single pair of numbers at a time
+    else {
+        display.textContent = firstInput + operator + secondInput;
+    }
+}
+
+const convIntToFloat = function() {
+    //convert string to floating point value
+    num1 = parseFloat(firstInput);
+    num2 = parseFloat(secondInput);
+}
+
